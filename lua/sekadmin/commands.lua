@@ -19,7 +19,8 @@ if SERVER then
         end
     end)
 
-    concommand.Add("sek",function(ply,cmd,args)
+    concommand.Add("sek",function(ply,cmd,_,args)
+        local args = sekadmin.ExplodeCommand(args)
         local id = sekadmin.ExistsCommand(args[1])
         if id!=false then
             table.remove(args,1)
@@ -36,7 +37,8 @@ if SERVER then
 end
 
 if CLIENT then
-    concommand.Add("sek",function(ply,cmd,args)
+    concommand.Add("sek",function(ply,cmd,_,args)
+        local args = sekadmin.ExplodeCommand(args)
         local id = sekadmin.ExistsCommand(args[1])
         if id!=false then
             table.remove(args,1)
@@ -47,7 +49,6 @@ if CLIENT then
                 if IsValid(ply) then
                     if sekadmin.commands[id]["local"]==true then
                         func(ply,args)
-                        print(1)
                     else
                         net.Start("sek.command")
                             net.WriteString(sekadmin.commands[id]["command"])
@@ -158,10 +159,66 @@ sekadmin.CreateCommand("sa.teleport","tp","Teleport","Teleport player to admin a
     end
 end)
 
-sekadmin.CreateCommand("sa.adduser","adduser","Users","Sets group to player","sek setgroup player1 groupname",true,false,function(ply,args)
+sekadmin.CreateCommand("sa.kick","kick","Util","Kick the player",'sek kick player1 "Prop Block"',false,false,function(ply,args)
+    local reason = "No reason given"
     if args[1]==nil then
-        
+        if ply==nil then
+            sekadmin.Log({sekadmin.config["chatcolor"],"Player not found!"})
+        else
+            sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
+        end
     elseif args[1]!=nil then
+        local target = sekadmin.FindByName(args[1])
+        if target then
+            if args[2]!=nil then reason=args[2] end
+            sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Kick the player ","#P"," Reason: ",reason,"."},ply,target)
+            game.KickID(target:SteamID(),reason)
+        else
+            sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
+        end
+    end
+end)
+
+sekadmin.CreateCommand("sa.kill","kill","Fun","Kill the player","sek kill player1",false,false,function(ply,args)
+    if args[1]==nil and ply!=nil then
+        ply:Kill()
+        sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Kill the player ","#P","."},ply,ply)
+    elseif args[1]!=nil then
+        local target = sekadmin.FindByName(args[1])
+        if target then
+            target:Kill()
+            sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Kill the player ","#P","."},ply,target)
+        else
+            if ply==nil then
+                sekadmin.Log({sekadmin.config["chatcolor"],"Player not found!"})
+            else
+                sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
+            end
+        end
+    end
+end)
+
+sekadmin.CreateCommand("sa.silentkill","skill","Fun","Silent kill the player","sek skill player1",false,false,function(ply,args)
+    if args[1]==nil and ply!=nil then
+        ply:KillSilent()
+        sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Silent kill the player ","#P","."},ply,ply)
+    elseif args[1]!=nil then
+        local target = sekadmin.FindByName(args[1])
+        if target then
+            target:KillSilent()
+            sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Silent kill the player ","#P","."},ply,target)
+        else
+            if ply==nil then
+                sekadmin.Log({sekadmin.config["chatcolor"],"Player not found!"})
+            else
+                sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
+            end
+        end
+    end
+end)
+
+sekadmin.CreateCommand("sa.adduser","adduser","Users","Sets group to player","sek setgroup player1 groupname",true,false,function(ply,args)
+    if args[1]!=nil then
         if args[2]!=nil then
             if sekadmin.ExistsGroup(args[2]) then
                 local target = sekadmin.FindByName(args[1])
@@ -194,7 +251,7 @@ sekadmin.CreateCommand("sa.adduser","adduser","Users","Sets group to player","se
 end)
 
 /*
-    ---> THERE CUSTOM COMMANDSsekadmin.SetGroup(steamid64,group)
+    ---> THERE CUSTOM COMMANDS
 */
 
 
