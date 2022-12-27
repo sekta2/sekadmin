@@ -49,7 +49,6 @@ if CLIENT then
                 if IsValid(ply) then
                     if sekadmin.commands[id]["local"]==true then
                         func(ply,args)
-                        print(1)
                     else
                         net.Start("sek.command")
                             net.WriteString(sekadmin.commands[id]["command"])
@@ -160,10 +159,46 @@ sekadmin.CreateCommand("sa.teleport","tp","Teleport","Teleport player to admin a
     end
 end)
 
-sekadmin.CreateCommand("sa.adduser","adduser","Users","Sets group to player","sek setgroup player1 groupname",true,false,function(ply,args)
-    if args[1]==nil then
-        
+sekadmin.CreateCommand("sa.kill","kill","Fun","Kill the player","sek kill player1",false,false,function(ply,args)
+    if args[1]==nil and ply!=nil then
+        ply:Kill()
+        sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Kill the player ","#P","."},ply,ply)
     elseif args[1]!=nil then
+        local target = sekadmin.FindByName(args[1])
+        if target then
+            target:Kill()
+            sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Kill the player ","#P","."},ply,target)
+        else
+            if ply==nil then
+                sekadmin.Log({sekadmin.config["chatcolor"],"Player not found!"})
+            else
+                sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
+            end
+        end
+    end
+end)
+
+sekadmin.CreateCommand("sa.silentkill","skill","Fun","Silent kill the player","sek skill player1",false,false,function(ply,args)
+    if args[1]==nil and ply!=nil then
+        ply:KillSilent()
+        sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Silent kill the player ","#P","."},ply,ply)
+    elseif args[1]!=nil then
+        local target = sekadmin.FindByName(args[1])
+        if target then
+            target:KillSilent()
+            sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Silent kill the player ","#P","."},ply,target)
+        else
+            if ply==nil then
+                sekadmin.Log({sekadmin.config["chatcolor"],"Player not found!"})
+            else
+                sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
+            end
+        end
+    end
+end)
+
+sekadmin.CreateCommand("sa.adduser","adduser","Users","Sets group to player","sek setgroup player1 groupname",true,false,function(ply,args)
+    if args[1]!=nil then
         if args[2]!=nil then
             if sekadmin.ExistsGroup(args[2]) then
                 local target = sekadmin.FindByName(args[1])
