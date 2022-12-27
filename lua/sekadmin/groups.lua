@@ -97,12 +97,13 @@ if SERVER then
         local exists = sekadmin.ExistsGroup("moderator")
         if !exists then sekadmin.CreateGroup(_,"moderator")
             sekadmin.AddPermission("moderator","sa.kick") sekadmin.AddPermission("moderator","sa.noclip")
+            sekadmin.AddPermission("moderator","sa.physgunplayers")
         end
 
         local exists = sekadmin.ExistsGroup("admin")
         if !exists then sekadmin.CreateGroup(_,"admin")
             sekadmin.AddPermission("admin","sa.ban") sekadmin.AddPermission("admin","sa.kick")
-            sekadmin.AddPermission("admin","sa.noclip")
+            sekadmin.AddPermission("admin","sa.noclip") sekadmin.AddPermission("admin","sa.physgunplayers")
         end
 
         local exists = sekadmin.ExistsGroup("root")
