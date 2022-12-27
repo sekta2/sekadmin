@@ -19,7 +19,8 @@ if SERVER then
         end
     end)
 
-    concommand.Add("sek",function(ply,cmd,args)
+    concommand.Add("sek",function(ply,cmd,_,args)
+        local args = sekadmin.ExplodeCommand(args)
         local id = sekadmin.ExistsCommand(args[1])
         if id!=false then
             table.remove(args,1)
@@ -36,7 +37,8 @@ if SERVER then
 end
 
 if CLIENT then
-    concommand.Add("sek",function(ply,cmd,args)
+    concommand.Add("sek",function(ply,cmd,_,args)
+        local args = sekadmin.ExplodeCommand(args)
         local id = sekadmin.ExistsCommand(args[1])
         if id!=false then
             table.remove(args,1)

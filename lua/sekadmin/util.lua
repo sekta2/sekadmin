@@ -42,3 +42,19 @@ function sekadmin.ChatCheck(tbl,admin,ply,self)
     end
     return newtbl
 end
+
+function sekadmin.ExplodeCommand(str) -- thanks KlΞn_list 🎀 ~ >,.,<#7589 for help
+    local len = #str
+    if len > 100 then return end
+    local args = {}
+    local mult = false
+    local word = ""
+    for i = 1, len do
+        local c = str:sub(i,i)
+        if c == '"' then mult = not mult continue end
+        if c == ' ' and not mult then args[#args+1] = word word = "" continue end
+        word = word .. c 
+    end
+    args[#args+1] = word
+    return args
+end
