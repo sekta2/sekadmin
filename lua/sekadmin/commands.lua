@@ -159,6 +159,26 @@ sekadmin.CreateCommand("sa.teleport","tp","Teleport","Teleport player to admin a
     end
 end)
 
+sekadmin.CreateCommand("sa.kick","kick","Util","Kick the player",'sek kick player1 "Prop Block"',false,false,function(ply,args)
+    local reason = "No reason given"
+    if args[1]==nil then
+        if ply==nil then
+            sekadmin.Log({sekadmin.config["chatcolor"],"Player not found!"})
+        else
+            sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
+        end
+    elseif args[1]!=nil then
+        local target = sekadmin.FindByName(args[1])
+        if target then
+            if args[2]!=nil then reason=args[2] end
+            sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Kick the player ","#P"," Reason: ",reason,"."},ply,target)
+            game.KickID(target:SteamID(),reason)
+        else
+            sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
+        end
+    end
+end)
+
 sekadmin.CreateCommand("sa.kill","kill","Fun","Kill the player","sek kill player1",false,false,function(ply,args)
     if args[1]==nil and ply!=nil then
         ply:Kill()
@@ -231,7 +251,7 @@ sekadmin.CreateCommand("sa.adduser","adduser","Users","Sets group to player","se
 end)
 
 /*
-    ---> THERE CUSTOM COMMANDSsekadmin.SetGroup(steamid64,group)
+    ---> THERE CUSTOM COMMANDS
 */
 
 
