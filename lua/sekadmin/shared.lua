@@ -1,3 +1,6 @@
+sekadmin.branch = "DEV"
+sekadmin.version = "2.1"
+
 include("sekadmin/config.lua")
 include("sekadmin/util.lua")
 include("sekadmin/players.lua")

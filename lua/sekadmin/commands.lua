@@ -146,19 +146,6 @@ sekadmin.CreateCommand("sa.noclip","noclip","Util","Enable/Disable noclip","sek 
     end
 end)
 
-sekadmin.CreateCommand("sa.teleport","tp","Teleport","Teleport player to admin aim position","sek tp player1",false,false,function(ply,args)
-    if args[1]==nil and ply!=nil then
-        ply:SetPos(ply:GetEyeTrace().HitPos)
-    elseif args[1]!=nil and ply!=nil then
-        local target = sekadmin.FindByName(args[1])
-        if target then
-            target:SetPos(ply:GetEyeTrace().HitPos)
-        else
-            sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
-        end
-    end
-end)
-
 sekadmin.CreateCommand("sa.kick","kick","Util","Kick the player",'sek kick player1 "Prop Block"',false,false,function(ply,args)
     local reason = "No reason given"
     if args[1]==nil then
@@ -173,6 +160,23 @@ sekadmin.CreateCommand("sa.kick","kick","Util","Kick the player",'sek kick playe
             if args[2]!=nil then reason=args[2] end
             sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Kick the player ","#P"," Reason: ",reason,"."},ply,target)
             game.KickID(target:SteamID(),reason)
+        else
+            sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
+        end
+    end
+end)
+
+sekadmin.CreateCommand("sa.version","version","Util","Print to console sekadmin version",'sek version',false,true,function(ply,args)
+    sekadmin.Log({sekadmin.config["chatcolor"],"sekAdmin ver: ",sekadmin.branch,".",sekadmin.version})
+end)
+
+sekadmin.CreateCommand("sa.teleport","tp","Teleport","Teleport player to admin aim position","sek tp player1",false,false,function(ply,args)
+    if args[1]==nil and ply!=nil then
+        ply:SetPos(ply:GetEyeTrace().HitPos)
+    elseif args[1]!=nil and ply!=nil then
+        local target = sekadmin.FindByName(args[1])
+        if target then
+            target:SetPos(ply:GetEyeTrace().HitPos)
         else
             sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
         end
@@ -207,6 +211,65 @@ sekadmin.CreateCommand("sa.silentkill","skill","Fun","Silent kill the player","s
         if target then
             target:KillSilent()
             sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Silent kill the player ","#P","."},ply,target)
+        else
+            if ply==nil then
+                sekadmin.Log({sekadmin.config["chatcolor"],"Player not found!"})
+            else
+                sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
+            end
+        end
+    end
+end)
+
+sekadmin.CreateCommand("sa.god","god","Fun","Enable god mode","sek god",false,false,function(ply,args)
+    if args[1]==nil and ply!=nil then
+        ply:GodEnable()
+        sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Give godmode to player ","#P","."},ply,ply)
+    elseif args[1]!=nil then
+        local target = sekadmin.FindByName(args[1])
+        if target then
+            target:GodEnable()
+            sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Give godmode to player ","#P","."},ply,target)
+        else
+            if ply==nil then
+                sekadmin.Log({sekadmin.config["chatcolor"],"Player not found!"})
+            else
+                sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
+            end
+        end
+    end
+end)
+
+sekadmin.CreateCommand("sa.ungod","ungod","Fun","Disable god mode","sek ungod",false,false,function(ply,args)
+    if args[1]==nil and ply!=nil then
+        ply:GodDisable()
+        sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Take godmode from player ","#P","."},ply,ply)
+    elseif args[1]!=nil then
+        local target = sekadmin.FindByName(args[1])
+        if target then
+            target:GodDisable()
+            sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Take godmode from player ","#P","."},ply,target)
+        else
+            if ply==nil then
+                sekadmin.Log({sekadmin.config["chatcolor"],"Player not found!"})
+            else
+                sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Player not found!"})
+            end
+        end
+    end
+end)
+
+sekadmin.CreateCommand("sa.ignite","ignite","Fun","Ignites player","sek ignite player1 100",false,false,function(ply,args)
+    if args[1]!=nil then
+        local target = sekadmin.FindByName(args[1])
+        if target then
+            local time = 9999
+            if args[2]!=nil then
+                time = args[2]:match('%d+')
+            end
+
+            target:Ignite(time,0)
+            sekadmin.LogAllImproved({sekadmin.config["chatcolor"],"#A"," Ignite player ","#P"," for ",sekadmin.config["argcolor"],tostring(time)," second's",sekadmin.config["chatcolor"],"."},ply,target)
         else
             if ply==nil then
                 sekadmin.Log({sekadmin.config["chatcolor"],"Player not found!"})
