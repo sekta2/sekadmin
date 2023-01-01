@@ -1,67 +1,46 @@
 sekadmin.commands = {}
 
 if SERVER then 
-    util.AddNetworkString("sek.command") 
-    net.Receive("sek.command",function(_,ply)
-        local command = net.ReadString()
-        local args = net.ReadTable()
-        
-        local id = sekadmin.ExistsCommand(command)
-        if id!=false then
-            local permexist = sekadmin.ExistsPermission(ply:GetUserGroup(),sekadmin.commands[id]["permission"])
-            local ipermexist = sekadmin.ExistsPermission(ply:GetUserGroup(),"*")
-            local func = sekadmin.commands[id]["func"]
-            if ipermexist or permexist then
-                func(ply,args)
-            else
-                sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"You not have permission to this command!"})
-            end
-        end
-    end)
 
     concommand.Add("sek",function(ply,cmd,_,args)
         local args = sekadmin.ExplodeCommand(args)
         local id = sekadmin.ExistsCommand(args[1])
-        if id!=false then
-            table.remove(args,1)
-            if table.Count(args)==0 and sekadmin.commands[id]["needargs"]==true then
-                sekadmin.Log({sekadmin.config["chatcolor"],"sek  ",sekadmin.commands[id]["command"]," - ",sekadmin.commands[id]["description"],". Example: ",sekadmin.commands[id]["example"]})
+        if IsValid(ply) then
+            if id!=false then
+                table.remove(args,1)
+                if table.Count(args)==0 and sekadmin.commands[id]["needargs"]==true then
+                    sekadmin.Log({sekadmin.config["chatcolor"],"sek  ",sekadmin.commands[id]["command"]," - ",sekadmin.commands[id]["description"],". Example: ",sekadmin.commands[id]["example"]})
+                else
+                    local permexist = sekadmin.ExistsPermission(ply:GetUserGroup(),sekadmin.commands[id]["permission"])
+                    local ipermexist = sekadmin.ExistsPermission(ply:GetUserGroup(),"*")
+                    local func = sekadmin.commands[id]["func"]
+                    if ipermexist or permexist then
+                        func(ply,args)
+                    else
+                        sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"You not have permission to this command!"})
+                    end
+                end
             else
-                local func = sekadmin.commands[id]["func"]
-                func(nil,args)
+                sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"Command not found!"})
             end
         else
-            sekadmin.Log({sekadmin.config["chatcolor"],"Command not found!"})
+            if id!=false then
+                table.remove(args,1)
+                if table.Count(args)==0 and sekadmin.commands[id]["needargs"]==true then
+                    sekadmin.Log({sekadmin.config["chatcolor"],"sek  ",sekadmin.commands[id]["command"]," - ",sekadmin.commands[id]["description"],". Example: ",sekadmin.commands[id]["example"]})
+                else
+                    local func = sekadmin.commands[id]["func"]
+                    func(nil,args)
+                end
+            else
+                sekadmin.Log({sekadmin.config["chatcolor"],"Command not found!"})
+            end
         end
     end)
 end
 
 if CLIENT then
-    concommand.Add("sek",function(ply,cmd,_,args)
-        local args = sekadmin.ExplodeCommand(args)
-        local id = sekadmin.ExistsCommand(args[1])
-        if id!=false then
-            table.remove(args,1)
-            if table.Count(args)==0 and sekadmin.commands[id]["needargs"]==true then
-                sekadmin.Log({sekadmin.config["chatcolor"],"!",sekadmin.commands[id]["command"]," - ",sekadmin.commands[id]["description"],". Example: ",sekadmin.commands[id]["example"]})
-            else
-                local func = sekadmin.commands[id]["func"]
-                if IsValid(ply) then
-                    if sekadmin.commands[id]["local"]==true then
-                        func(ply,args)
-                    else
-                        net.Start("sek.command")
-                            net.WriteString(sekadmin.commands[id]["command"])
-                            if args==nil then args={} end
-                            net.WriteTable(args)
-                        net.SendToServer()
-                    end
-                end
-            end
-        else
-            sekadmin.Log({sekadmin.config["chatcolor"],"Command not found!"})
-        end
-    end)
+    
 end
 
 function sekadmin.CreateCommand(perm,comm,category,desc,example,needargs,locals,func)

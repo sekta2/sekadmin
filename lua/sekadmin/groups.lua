@@ -18,6 +18,19 @@ if SERVER then
         return result
     end
 
+    function sekadmin.CheckHierarchy(group1,group2)
+        if group1==nil or group2==nil then return end
+        local result = false
+        if sekadmin.ExistsGroup(group1) and sekadmin.ExistsGroup(group2) then
+            local pos1 = sql.Query("SELECT pos FROM sekadmin_groups WHERE name = " .. sql.SQLStr(group1))[1]["pos"]
+            local pos2 = sql.Query("SELECT pos FROM sekadmin_groups WHERE name = " .. sql.SQLStr(group2))[1]["pos"]
+            if pos1>pos2 then
+                result = true
+            end
+        end
+        return result
+    end
+
     function sekadmin.CreateGroup(pos,name)
         local exists = sql.Query('SELECT * FROM sekadmin_groups WHERE name = ' .. sql.SQLStr(name) .. '') 
         if exists==nil then 
