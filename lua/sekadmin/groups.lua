@@ -119,6 +119,11 @@ if SERVER then
             sekadmin.AddPermission("admin","sa.noclip") sekadmin.AddPermission("admin","sa.physgunplayers")
         end
 
+        for k,v in pairs({"user","moderator","admin"}) do
+            sekadmin.AddPermission(v,"sa.help")
+            sekadmin.AddPermission(v,"sa.version")
+        end
+
         local exists = sekadmin.ExistsGroup("root")
         if !exists then sekadmin.CreateGroup(_,"root") sekadmin.AddPermission("root","*") end
     end

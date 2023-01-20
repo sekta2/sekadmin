@@ -2,6 +2,8 @@ sekadmin.commands = {}
 
 if SERVER then 
 
+    util.AddNetworkString("sa.execute")
+
     concommand.Add("sek",function(ply,cmd,_,args)
         local args = sekadmin.ExplodeCommand(args)
         local id = sekadmin.ExistsCommand(args[1])
@@ -11,11 +13,19 @@ if SERVER then
                 if table.Count(args)==0 and sekadmin.commands[id]["needargs"]==true then
                     sekadmin.Log({sekadmin.config["chatcolor"],"sek  ",sekadmin.commands[id]["command"]," - ",sekadmin.commands[id]["description"],". Example: ",sekadmin.commands[id]["example"]})
                 else
-                    local permexist = sekadmin.ExistsPermission(ply:GetUserGroup(),sekadmin.commands[id]["permission"])
+                    local permission = sekadmin.commands[id]["permission"]
+                    local permexist = sekadmin.ExistsPermission(ply:GetUserGroup(),permission)
                     local ipermexist = sekadmin.ExistsPermission(ply:GetUserGroup(),"*")
                     local func = sekadmin.commands[id]["func"]
-                    if ipermexist or permexist then
-                        func(ply,args)
+                    if (ipermexist or permexist) then
+                        if sekadmin.commands[id]["local"] == true then
+                            net.Start("sa.execute")
+                                net.WriteFloat(id)
+                                net.WriteTable(args)
+                            net.Send(ply)
+                        else
+                            func(ply,args)
+                        end
                     else
                         sekadmin.LogPly(ply,{sekadmin.config["chatcolor"],"You not have permission to this command!"})
                     end
@@ -40,7 +50,13 @@ if SERVER then
 end
 
 if CLIENT then
-    
+    net.Receive("sa.execute",function()
+        local id = net.ReadFloat()
+        local args = net.ReadTable()
+        local func = sekadmin.commands[id]["func"]
+
+        func(LocalPlayer(),args)
+    end)
 end
 
 function sekadmin.CreateCommand(perm,comm,category,desc,example,needargs,locals,func)
@@ -51,7 +67,7 @@ function sekadmin.CreateCommand(perm,comm,category,desc,example,needargs,locals,
         ["description"] = desc, -- Description of this command
         ["example"] = example, -- Example of using this command
         ["needargs"] = needargs, -- Need to this command args?
-        ["local"] = locals, -- Need to this command NETwork executing function?
+        ["local"] = locals, -- Don't need to this command NETwork executing function?
         ["func"] = func
     }})
 end
@@ -259,7 +275,7 @@ sekadmin.CreateCommand("sa.ignite","ignite","Fun","Ignites player","sek ignite p
     end
 end)
 
-sekadmin.CreateCommand("sa.adduser","adduser","Users","Sets group to player","sek setgroup player1 groupname",true,false,function(ply,args)
+sekadmin.CreateCommand("sa.adduser","adduser","Users","Sets group to player","sek addgroup player1 groupname",true,false,function(ply,args)
     if args[1]!=nil then
         if args[2]!=nil then
             if sekadmin.ExistsGroup(args[2]) then

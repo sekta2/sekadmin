@@ -1,5 +1,5 @@
 sekadmin.branch = "DEV"
-sekadmin.version = "2.1"
+sekadmin.version = "2.2"
 
 include("sekadmin/config.lua")
 include("sekadmin/util.lua")
